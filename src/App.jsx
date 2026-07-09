@@ -98,11 +98,12 @@ export default function B20LauncherApp() {
       // 1. Prepare Encodings for B20 Creation
       const salt = ethers.hexlify(ethers.randomBytes(32)); // Random salt for deterministic address
       
-      // Encode params: (name, symbol, initial_admin, decimals)
+      // Encode params as a TUPLE: (string name, string symbol, address initial_admin, uint8 decimals)
+      // The B20 precompile expects a single struct (tuple), not 4 separate arguments.
       const defaultAbiCoder = ethers.AbiCoder.defaultAbiCoder();
       const params = defaultAbiCoder.encode(
-        ["string", "string", "address", "uint8"], 
-        [name, symbol, account, 18]
+        ["tuple(string, string, address, uint8)"], 
+        [[name, symbol, account, 18]]
       );
 
       // Encode initCalls: grantRole(MINT_ROLE, account) & updateSupplyCap(maxSupply)
